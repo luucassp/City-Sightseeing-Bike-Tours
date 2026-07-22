@@ -60,10 +60,10 @@ export default function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-3">
         <div>
           <Image
-            src="/logo.png"
+            src="/logo-footer.png"
             alt="Sightseeing Bike Tours"
-            width={370}
-            height={148}
+            width={480}
+            height={234}
             className="h-14 w-auto"
           />
           <ul className="mt-6 space-y-3 text-sm text-white/80">
