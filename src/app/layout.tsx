@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bike Tours | Passeios Guiados de Bicicleta",
+  title: "Sightseeing Bike Tours | Guided Bike Tours in Dublin",
   description:
-    "Explore a cidade em duas rodas com tours guiados de bicicleta e e-bike.",
+    "Explore Dublin on two wheels with guided bicycle and e-bike tours.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="pt"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">

@@ -2,13 +2,13 @@ export default function MeetingPointNotice() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 text-center">
       <h2 className="text-2xl font-bold text-brand-dark">
-        Onde Buscar a Sua Bicicleta
+        Where to Pick Up Your Bike
       </h2>
       <p className="mt-3 text-gray-600">
-        [Endereço do ponto de encontro — substituir pelo endereço real]
+        [Meeting point address — replace with the real address]
       </p>
       <p className="mt-2 text-sm text-gray-500">
-        Siga as indicações no local para encontrar o nosso balcão.
+        Follow the signs on site to find our desk.
       </p>
     </section>
   );

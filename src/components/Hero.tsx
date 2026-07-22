@@ -26,13 +26,12 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black/55" />
       <div className="relative z-10 max-w-3xl px-4">
         <h1 className="text-4xl font-extrabold md:text-6xl">
-          Tours de Bicicleta e E-bike pela Cidade
+          Bicycle and E-bike Tours Around the City
         </h1>
         <p className="mt-4 text-lg text-white/90">
-          Explore as ruas históricas de Dublin num passeio guiado de
-          bicicleta ou e-bike, com duas saídas diárias — às 10h e às 14h. Os
-          nossos guias especializados conduzem-no por 8 pontos históricos da
-          cidade.
+          Explore Dublin&apos;s historic streets on a guided bicycle or
+          e-bike tour, with two daily departures — at 10am and 2pm. Our
+          expert local guides take you through 8 historic sites in the city.
         </p>
         <BookingButton className="mt-8" />
       </div>

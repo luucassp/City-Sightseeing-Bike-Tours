@@ -3,17 +3,17 @@ import BookingButton from "@/components/BookingButton";
 
 const options = [
   {
-    name: "Bicicleta Tradicional",
-    price: "35€",
+    name: "Traditional Bicycle",
+    price: "€35",
     description:
-      "Ideal para ciclistas experientes que gostam de pedalar enquanto exploram a cidade.",
+      "Ideal for experienced cyclists who enjoy pedalling while exploring the city.",
     photo: "/bikes/bicicleta-tradicional.png",
   },
   {
     name: "E-bike",
-    price: "45€",
+    price: "€45",
     description:
-      "Conforto e facilidade para todos os níveis. Suba ladeiras sem esforço.",
+      "Comfort and ease for all levels. Cruise up hills without breaking a sweat.",
     photo: "/bikes/e-bike.png",
   },
 ];
@@ -22,7 +22,7 @@ export default function PricingCards() {
   return (
     <section className="mx-auto max-w-5xl px-4 py-16">
       <h2 className="text-center text-3xl font-bold text-brand-dark">
-        Qual Bicicleta Escolher?
+        Which Bike Should You Choose?
       </h2>
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         {options.map((opt) => (

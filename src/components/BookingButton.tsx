@@ -7,10 +7,10 @@ export default function BookingButton({
 }) {
   return (
     <Link
-      href="/reservas"
+      href="/booking"
       className={`inline-block rounded-full bg-brand-gold px-8 py-3 font-bold text-brand-dark shadow-lg transition hover:scale-105 ${className}`}
     >
-      Reservar Bilhete
+      Book Now
     </Link>
   );
 }

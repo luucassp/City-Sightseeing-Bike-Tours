@@ -2,22 +2,22 @@ const testimonials = [
   {
     name: "Ana Pereira",
     quote:
-      "Guia excelente, muito simpático e cheio de histórias interessantes sobre a cidade. Recomendo a quem quer conhecer Dublin de um jeito diferente.",
+      "Excellent guide, really friendly and full of interesting stories about the city. I'd recommend it to anyone who wants to see Dublin in a different way.",
   },
   {
-    name: "João Ribeiro",
+    name: "John Ryan",
     quote:
-      "A e-bike tornou o passeio muito mais leve — mesmo sem estar em grande forma, consegui acompanhar o grupo sem esforço e aproveitar cada paragem.",
+      "The e-bike made the ride so much easier — even without being very fit, I kept up with the group effortlessly and enjoyed every stop.",
   },
   {
     name: "Marta Santos",
     quote:
-      "Vimos lugares que jamais encontraríamos a pé, e o ritmo do grupo foi perfeito. Uma das melhores atividades que fizemos na viagem.",
+      "We saw places we'd never have found on foot, and the group's pace was perfect. One of the best activities we did on the trip.",
   },
   {
     name: "Carlos Mendes",
     quote:
-      "Reservei em cima da hora e não me arrependi. O guia adaptou o percurso ao ritmo do grupo e explicou muito bem a história de cada paragem.",
+      "I booked last minute and have no regrets. The guide adapted the route to the group's pace and explained the history of each stop really well.",
   },
 ];
 
@@ -25,7 +25,7 @@ export default function Testimonials() {
   return (
     <section className="mx-auto max-w-5xl px-4 py-16">
       <h2 className="text-center text-3xl font-bold text-brand-dark">
-        O Que Dizem os Nossos Clientes
+        What Our Customers Say
       </h2>
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         {testimonials.map((t) => (
@@ -45,7 +45,7 @@ export default function Testimonials() {
           href="#"
           className="font-semibold text-brand-red underline decoration-brand-gold decoration-2 underline-offset-4 hover:text-brand-red-dark"
         >
-          Ver mais avaliações (adicionar link do Google/TripAdvisor) →
+          See more reviews (add Google/TripAdvisor link) →
         </a>
       </p>
     </section>

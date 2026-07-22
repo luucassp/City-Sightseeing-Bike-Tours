@@ -108,7 +108,7 @@ export default function InteractiveBentoGallery({
         >
           <button
             type="button"
-            aria-label="Fechar"
+            aria-label="Close"
             onClick={() => setOpenIndex(null)}
             className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20"
           >
@@ -116,7 +116,7 @@ export default function InteractiveBentoGallery({
           </button>
           <button
             type="button"
-            aria-label="Anterior"
+            aria-label="Previous"
             onClick={(e) => {
               e.stopPropagation();
               setOpenIndex((i) =>
@@ -129,7 +129,7 @@ export default function InteractiveBentoGallery({
           </button>
           <button
             type="button"
-            aria-label="Seguinte"
+            aria-label="Next"
             onClick={(e) => {
               e.stopPropagation();
               setOpenIndex((i) => (i === null ? i : (i + 1) % mediaItems.length));

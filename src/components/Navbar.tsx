@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const links = [
-  { href: "/pontos-de-interesse", label: "Pontos de Interesse" },
-  { href: "/o-tour", label: "O Tour" },
-  { href: "/aluguer-privado", label: "Aluguer Privado" },
-  { href: "/contacto", label: "Contacto" },
-  { href: "/reservas", label: "Gerir Reserva" },
+  { href: "/points-of-interest", label: "Points of Interest" },
+  { href: "/the-tour", label: "The Tour" },
+  { href: "/private-hire", label: "Private Hire" },
+  { href: "/contact", label: "Contact" },
+  { href: "/booking", label: "Manage Booking" },
 ];
 
 export default function Navbar() {
@@ -26,9 +26,9 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHome]);
 
-  // Só a home tem hero para "flutuar" por cima; nas outras páginas o menu
-  // fica sempre sólido e no fluxo normal, senão o conteúdo (fundo claro)
-  // ficaria escondido atrás dele.
+  // Only the home page has a hero for the menu to "float" over; on other
+  // pages the menu is always solid and in normal flow, otherwise the
+  // content (light background) would be hidden behind it.
   const transparent = isHome && !scrolled;
 
   return (
@@ -51,7 +51,7 @@ export default function Navbar() {
         <button
           className="text-white md:hidden"
           onClick={() => setOpen(!open)}
-          aria-label="Abrir menu"
+          aria-label="Open menu"
         >
           ☰
         </button>

@@ -6,12 +6,12 @@ export default function OpeningHours() {
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 text-center sm:flex-row sm:justify-between sm:text-left">
         <div>
           <h2 className="text-2xl font-bold text-brand-gold">
-            Horário de Funcionamento
+            Opening Hours
           </h2>
           <p className="mt-2 text-white/80">
-            Segunda a domingo, das 10h às 17h
+            Monday to Sunday, 10am – 5pm
           </p>
-          <p className="text-white/80">Saídas diárias às 10h e às 14h</p>
+          <p className="text-white/80">Daily departures at 10am and 2pm</p>
         </div>
         <BookingButton className="shrink-0" />
       </div>
