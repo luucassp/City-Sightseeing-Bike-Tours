@@ -118,13 +118,6 @@ function buildPath(): [number, number][] {
   return path;
 }
 
-function popupHtml(stop: RouteStop): string {
-  const media = stop.img
-    ? `<div class="route-popup-media" style="background-image:url('${stop.img}')"></div>`
-    : `<div class="route-popup-media route-popup-media--start">🚲</div>`;
-  return `<div class="route-popup-card">${media}<div class="route-popup-body"><span class="route-popup-tag">${stop.tag}</span><h3>${stop.name}</h3><p>${stop.desc}</p></div></div>`;
-}
-
 // The library is loaded via CDN (instead of an npm dependency) because
 // this widget is self-contained and doesn't need to be part of the app bundle.
 let mapLibreLoading: Promise<any> | null = null;
@@ -171,9 +164,28 @@ export default function RouteMap() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const playRouteRef = useRef<() => void>(() => {});
+  const bikeFrameRef = useRef<number | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading"
   );
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const selectedStop =
+    selectedId !== null
+      ? routeStops.find((s) => s.id === selectedId) ?? null
+      : null;
+
+  useEffect(() => {
+    if (selectedId === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedId(null);
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [selectedId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -203,42 +215,12 @@ export default function RouteMap() {
           if (cancelled) return;
 
           const fullPath = buildPath();
-          let routeAnim: ReturnType<typeof setInterval> | null = null;
-
-          const playRoute = () => {
-            const src = map.getSource("route");
-            if (!src) return;
-            if (routeAnim) clearInterval(routeAnim);
-            let i = 1;
-            src.setData({
-              type: "Feature",
-              geometry: { type: "LineString", coordinates: [] },
-            });
-            routeAnim = setInterval(() => {
-              src.setData({
-                type: "Feature",
-                geometry: {
-                  type: "LineString",
-                  coordinates: fullPath.slice(0, i),
-                },
-              });
-              i += 4;
-              if (i > fullPath.length) {
-                if (routeAnim) clearInterval(routeAnim);
-                src.setData({
-                  type: "Feature",
-                  geometry: { type: "LineString", coordinates: fullPath },
-                });
-              }
-            }, 20);
-          };
-          playRouteRef.current = playRoute;
 
           map.addSource("route", {
             type: "geojson",
             data: {
               type: "Feature",
-              geometry: { type: "LineString", coordinates: [] },
+              geometry: { type: "LineString", coordinates: fullPath },
             },
           });
           map.addLayer({
@@ -285,18 +267,42 @@ export default function RouteMap() {
             el.innerHTML = `<span>${
               stop.kind === "start" ? "🚲" : stop.id
             }</span>`;
-
-            const popup = new maplibregl.Popup({
-              offset: 26,
-              maxWidth: "280px",
-              className: "route-popup",
-            }).setHTML(popupHtml(stop));
+            el.addEventListener("click", () => setSelectedId(stop.id));
 
             new maplibregl.Marker({ element: el, anchor: "bottom" })
               .setLngLat(stop.coord)
-              .setPopup(popup)
               .addTo(map);
           });
+
+          const bikeWrap = document.createElement("div");
+          bikeWrap.className = "route-bike-wrap";
+          bikeWrap.innerHTML = '<span class="route-bike-icon">🚲</span>';
+          const bikeMarker = new maplibregl.Marker({
+            element: bikeWrap,
+            anchor: "center",
+          })
+            .setLngLat(fullPath[0])
+            .addTo(map);
+
+          const LOOP_DURATION = 30000;
+          let animStart: number | null = null;
+
+          const animateBike = (timestamp: number) => {
+            if (animStart === null) animStart = timestamp;
+            const elapsed = (timestamp - animStart) % LOOP_DURATION;
+            const progress = elapsed / LOOP_DURATION;
+            const floatIndex = progress * (fullPath.length - 1);
+            const i0 = Math.floor(floatIndex);
+            const i1 = Math.min(i0 + 1, fullPath.length - 1);
+            bikeMarker.setLngLat(
+              lerp(fullPath[i0], fullPath[i1], floatIndex - i0)
+            );
+            bikeFrameRef.current = requestAnimationFrame(animateBike);
+          };
+
+          playRouteRef.current = () => {
+            animStart = null;
+          };
 
           const lons = routeStops.map((p) => p.coord[0]);
           const lats = routeStops.map((p) => p.coord[1]);
@@ -311,7 +317,7 @@ export default function RouteMap() {
             duration: 0,
           });
 
-          playRoute();
+          bikeFrameRef.current = requestAnimationFrame(animateBike);
           setStatus("ready");
         });
       })
@@ -321,6 +327,10 @@ export default function RouteMap() {
 
     return () => {
       cancelled = true;
+      if (bikeFrameRef.current !== null) {
+        cancelAnimationFrame(bikeFrameRef.current);
+        bikeFrameRef.current = null;
+      }
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -353,7 +363,7 @@ export default function RouteMap() {
             onClick={() => playRouteRef.current()}
             className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-brand-gold px-5 py-2 text-sm font-bold text-brand-dark shadow-lg transition hover:scale-105"
           >
-            ↻ Replay route
+            ↻ Restart animation
           </button>
         )}
 
@@ -374,6 +384,50 @@ export default function RouteMap() {
           </div>
         )}
       </div>
+
+      {selectedStop && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-200 flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+          onClick={() => setSelectedId(null)}
+        >
+          <div
+            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => setSelectedId(null)}
+              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-xl text-white transition hover:bg-black/60"
+            >
+              ×
+            </button>
+            {selectedStop.img ? (
+              <div
+                className="h-56 w-full bg-cover bg-center sm:h-64"
+                style={{ backgroundImage: `url(${selectedStop.img})` }}
+              />
+            ) : (
+              <div className="flex h-56 items-center justify-center bg-brand-dark text-6xl sm:h-64">
+                🚲
+              </div>
+            )}
+            <div className="p-6">
+              <span className="text-xs font-bold uppercase tracking-wide text-brand-red">
+                {selectedStop.tag}
+              </span>
+              <h3 className="mt-1 text-xl font-bold text-brand-dark">
+                {selectedStop.name}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                {selectedStop.desc}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx global>{`
         .route-marker {
@@ -398,56 +452,24 @@ export default function RouteMap() {
         .route-marker.is-start {
           background: #1a1a1a;
         }
-        .route-popup .maplibregl-popup-content {
-          padding: 0;
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        .route-bike-wrap {
+          pointer-events: none;
+          z-index: 5;
         }
-        .route-popup .maplibregl-popup-close-button {
-          color: #fff;
-          font-size: 18px;
-          padding: 4px 8px;
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        .route-bike-icon {
+          display: block;
+          font-size: 26px;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+          animation: route-bike-bob 1.2s ease-in-out infinite;
         }
-        .route-popup-card {
-          width: 240px;
-          font-family: var(--font-geist-sans), Arial, sans-serif;
-        }
-        .route-popup-media {
-          height: 130px;
-          background-size: cover;
-          background-position: center;
-          background-color: #1a1a1a;
-        }
-        .route-popup-media--start {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 40px;
-        }
-        .route-popup-body {
-          padding: 12px 14px 14px;
-        }
-        .route-popup-tag {
-          display: inline-block;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.03em;
-          text-transform: uppercase;
-          color: #e1251b;
-        }
-        .route-popup-body h3 {
-          margin: 4px 0 6px;
-          font-size: 15px;
-          font-weight: 700;
-          color: #1a1a1a;
-        }
-        .route-popup-body p {
-          margin: 0;
-          font-size: 12.5px;
-          line-height: 1.45;
-          color: #444;
+        @keyframes route-bike-bob {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-3px);
+          }
         }
       `}</style>
     </div>
