@@ -33,9 +33,13 @@ export default function Navbar() {
 
   return (
     <header
-      className={`z-50 transition-colors duration-300 ${
+      className={`z-50 transition-all duration-300 ${
         isHome ? "fixed top-0 left-0 right-0" : "sticky top-0"
-      } ${transparent ? "bg-transparent" : "bg-brand-red shadow-md"}`}
+      } ${
+        transparent
+          ? "bg-transparent"
+          : "border-b border-black/5 bg-white/90 shadow-sm backdrop-blur-md"
+      }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         <Link href="/" className="shrink-0">
@@ -49,7 +53,7 @@ export default function Navbar() {
           />
         </Link>
         <button
-          className="text-white md:hidden"
+          className={`md:hidden ${transparent ? "text-white" : "text-brand-dark"}`}
           onClick={() => setOpen(!open)}
           aria-label="Open menu"
         >
@@ -60,7 +64,11 @@ export default function Navbar() {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="font-semibold text-white hover:text-brand-gold"
+                className={`font-semibold transition ${
+                  transparent
+                    ? "text-white hover:text-brand-gold"
+                    : "text-brand-dark hover:text-brand-red"
+                }`}
               >
                 {link.label}
               </Link>
@@ -69,12 +77,12 @@ export default function Navbar() {
         </ul>
       </nav>
       {open && (
-        <ul className="flex flex-col gap-2 bg-brand-red-dark px-4 pb-4 md:hidden">
+        <ul className="flex flex-col gap-2 border-t border-black/5 bg-white px-4 pb-4 md:hidden">
           {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="block py-2 text-white"
+                className="block py-2 text-brand-dark"
                 onClick={() => setOpen(false)}
               >
                 {link.label}
