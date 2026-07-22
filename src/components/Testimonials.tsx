@@ -1,7 +1,24 @@
 const testimonials = [
-  { name: "Ana P.", quote: "Guia excelente, aprendi muito sobre a história da cidade." },
-  { name: "João R.", quote: "A e-bike tornou o passeio muito mais leve e divertido." },
-  { name: "Marta S.", quote: "Vimos lugares que jamais encontraríamos a pé." },
+  {
+    name: "Ana Pereira",
+    quote:
+      "Guia excelente, muito simpático e cheio de histórias interessantes sobre a cidade. Recomendo a quem quer conhecer Dublin de um jeito diferente.",
+  },
+  {
+    name: "João Ribeiro",
+    quote:
+      "A e-bike tornou o passeio muito mais leve — mesmo sem estar em grande forma, consegui acompanhar o grupo sem esforço e aproveitar cada paragem.",
+  },
+  {
+    name: "Marta Santos",
+    quote:
+      "Vimos lugares que jamais encontraríamos a pé, e o ritmo do grupo foi perfeito. Uma das melhores atividades que fizemos na viagem.",
+  },
+  {
+    name: "Carlos Mendes",
+    quote:
+      "Reservei em cima da hora e não me arrependi. O guia adaptou o percurso ao ritmo do grupo e explicou muito bem a história de cada paragem.",
+  },
 ];
 
 export default function Testimonials() {
@@ -10,7 +27,7 @@ export default function Testimonials() {
       <h2 className="text-center text-3xl font-bold text-brand-dark">
         O Que Dizem os Nossos Clientes
       </h2>
-      <div className="mt-10 grid gap-8 md:grid-cols-3">
+      <div className="mt-10 grid gap-8 md:grid-cols-2">
         {testimonials.map((t) => (
           <blockquote
             key={t.name}
@@ -23,6 +40,14 @@ export default function Testimonials() {
           </blockquote>
         ))}
       </div>
+      <p className="mt-8 text-center">
+        <a
+          href="#"
+          className="font-semibold text-brand-red underline decoration-brand-gold decoration-2 underline-offset-4 hover:text-brand-red-dark"
+        >
+          Ver mais avaliações (adicionar link do Google/TripAdvisor) →
+        </a>
+      </p>
     </section>
   );
 }
