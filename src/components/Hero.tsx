@@ -1,28 +1,49 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import BookingButton from "@/components/BookingButton";
 
 export default function Hero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mq.matches) videoRef.current?.pause();
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const update = () =>
+      setShowVideo(desktopQuery.matches && !motionQuery.matches);
+    update();
+
+    desktopQuery.addEventListener("change", update);
+    motionQuery.addEventListener("change", update);
+    return () => {
+      desktopQuery.removeEventListener("change", update);
+      motionQuery.removeEventListener("change", update);
+    };
   }, []);
 
   return (
     <section className="relative flex min-h-155 items-center justify-center overflow-hidden text-center text-white">
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster="/hero.jpg"
-        className="absolute inset-0 h-full w-full object-cover"
-      >
-        <source src="/videos/hero-loop.mp4" type="video/mp4" />
-      </video>
+      <Image
+        src="/hero.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      {showVideo && (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/hero.jpg"
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src="/videos/hero-loop.mp4" type="video/mp4" />
+        </video>
+      )}
       <div className="absolute inset-0 bg-black/55" />
       <div className="relative z-10 max-w-3xl px-4">
         <h1 className="text-4xl font-extrabold md:text-6xl">
