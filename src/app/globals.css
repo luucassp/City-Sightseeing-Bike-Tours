@@ -15,6 +15,17 @@
   --color-brand-red-dark: #b81c13;
   --color-brand-gold: #f5a623;
   --color-brand-dark: #1a1a1a;
+
+  --animate-hero-zoom: hero-zoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
 }
 
 body {

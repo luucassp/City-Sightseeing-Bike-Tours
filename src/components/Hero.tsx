@@ -30,7 +30,7 @@ export default function Hero() {
         fill
         priority
         sizes="100vw"
-        className="object-cover"
+        className="animate-hero-zoom object-cover motion-reduce:animate-none"
       />
       {showVideo && (
         <video
