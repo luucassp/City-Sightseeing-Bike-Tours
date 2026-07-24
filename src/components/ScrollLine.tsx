@@ -11,6 +11,7 @@ type ScrollLineProps = {
   trackColor?: string;
   bikeSize?: number;
   showBike?: boolean;
+  bikeImageSrc?: string;
 };
 
 export default function ScrollLine({
@@ -22,6 +23,7 @@ export default function ScrollLine({
   trackColor = "#1a1a1a",
   bikeSize = 30,
   showBike = true,
+  bikeImageSrc,
 }: ScrollLineProps) {
   const maskId = useId();
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,8 @@ export default function ScrollLine({
     const wrap = wrapRef.current;
     const maskPath = maskPathRef.current;
     if (!wrap || !maskPath) return;
+
+    const [, , viewW, viewH] = viewBox.split(/\s+/).map(Number);
 
     const length = maskPath.getTotalLength();
     maskPath.style.strokeDasharray = `${length}`;
@@ -46,7 +50,7 @@ export default function ScrollLine({
 
       maskPath.style.strokeDashoffset = `${length * (1 - progress)}`;
 
-      if (bikeRef.current) {
+      if (bikeRef.current && rect.width && rect.height) {
         const dist = progress * length;
         const point = maskPath.getPointAtLength(dist);
         const ahead = maskPath.getPointAtLength(Math.min(length, dist + 1));
@@ -54,9 +58,15 @@ export default function ScrollLine({
           -20,
           Math.min(20, (Math.atan2(ahead.y - point.y, ahead.x - point.x) * 180) / Math.PI)
         );
+
+        // Counter-scale so the bike keeps its true proportions even when the
+        // SVG itself is stretched non-uniformly (preserveAspectRatio="none").
+        const sx = rect.width / viewW;
+        const sy = rect.height / viewH;
+
         bikeRef.current.setAttribute(
           "transform",
-          `translate(${point.x} ${point.y}) rotate(${angle})`
+          `translate(${point.x} ${point.y}) rotate(${angle}) scale(${1 / sx} ${1 / sy})`
         );
       }
 
@@ -115,15 +125,26 @@ export default function ScrollLine({
 
         {showBike && (
           <g ref={bikeRef}>
-            <text
-              fill="#1a1a1a"
-              fontSize={bikeSize}
-              textAnchor="middle"
-              dominantBaseline="central"
-              style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.35))" }}
-            >
-              🚲
-            </text>
+            {bikeImageSrc ? (
+              <image
+                href={bikeImageSrc}
+                x={-bikeSize / 2}
+                y={-bikeSize * 0.375}
+                width={bikeSize}
+                height={bikeSize * 0.75}
+                style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.35))" }}
+              />
+            ) : (
+              <text
+                fill="#1a1a1a"
+                fontSize={bikeSize}
+                textAnchor="middle"
+                dominantBaseline="central"
+                style={{ filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.35))" }}
+              >
+                🚲
+              </text>
+            )}
           </g>
         )}
       </svg>

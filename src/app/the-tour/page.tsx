@@ -3,9 +3,9 @@ import Reveal from "@/components/Reveal";
 import ScrollLine from "@/components/ScrollLine";
 
 const included = [
-  { icon: "🛡️", label: "Safety equipment" },
-  { icon: "🧑‍🏫", label: "Local guide" },
-  { icon: "🎧", label: "Earphones for live commentary between stops" },
+  { icon: "/icons/helmet-safety.png", label: "Safety equipment" },
+  { icon: "/icons/tour-flag.png", label: "Local guide" },
+  { icon: "/icons/earphones.png", label: "Earphones for live commentary between stops" },
 ];
 
 const notSuitableFor = [
@@ -52,35 +52,43 @@ const testimonials = [
 // Repeats the same weave-left/weave-right curve used across the site's
 // ScrollLine accents so the effect can run the full height of the page
 // instead of being confined to a single section.
-function buildRoutePath(totalHeight: number, segmentHeight = 140, amplitude = 30) {
-  let d = `M${amplitude} 0`;
+function buildRoutePath(
+  totalHeight: number,
+  segmentHeight = 140,
+  amplitude = 30,
+  centerX = amplitude
+) {
+  let d = `M${centerX} 0`;
   let y = 0;
   while (y < totalHeight) {
     const h = Math.min(segmentHeight, totalHeight - y);
     const c1y = y + h * (5 / 14);
     const c2y = y + h * (9 / 14);
     const endY = y + h;
-    d += ` C 0 ${c1y}, ${amplitude * 2} ${c2y}, ${amplitude} ${endY}`;
+    d += ` C ${centerX - amplitude} ${c1y}, ${centerX + amplitude} ${c2y}, ${centerX} ${endY}`;
     y = endY;
   }
   return d;
 }
 
 const ROUTE_HEIGHT = 2660;
-const routePath = buildRoutePath(ROUTE_HEIGHT);
+const ROUTE_WIDTH = 300;
+const ROUTE_AMPLITUDE = 135;
+const routePath = buildRoutePath(ROUTE_HEIGHT, 140, ROUTE_AMPLITUDE, ROUTE_WIDTH / 2);
 
 export default function TheTourPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
-      <div className="relative">
-        <ScrollLine
-          className="pointer-events-none absolute -left-9 inset-y-0 hidden w-12 sm:block sm:-left-10 sm:w-14 md:-left-12 md:w-16"
-          d={routePath}
-          viewBox={`0 0 60 ${ROUTE_HEIGHT}`}
-          preserveAspectRatio="none"
-          bikeSize={65}
-        />
+    <div className="relative">
+      <ScrollLine
+        className="pointer-events-none absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 opacity-[0.15]"
+        d={routePath}
+        viewBox={`0 0 ${ROUTE_WIDTH} ${ROUTE_HEIGHT}`}
+        preserveAspectRatio="none"
+        bikeImageSrc="/icons/bike-pedal.png"
+        bikeSize={64}
+      />
 
+      <div className="relative z-10 mx-auto max-w-4xl px-4 py-16">
         <Reveal delay={0}>
           <h1 className="text-4xl font-bold text-brand-dark">
             Experience Dublin on two wheels
@@ -138,6 +146,32 @@ export default function TheTourPage() {
                 sizes="(min-width: 640px) 256px, 34vw"
                 className="object-cover"
               />
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={260}>
+          <div className="mt-10 grid items-center gap-8 sm:grid-cols-5">
+            <div className="sm:col-span-3">
+              <h2 className="text-2xl font-bold text-brand-dark">
+                See It In Action
+              </h2>
+              <p className="mt-3 text-gray-700">
+                A minute with Laura, one of our guides, on what a day
+                pedaling through Dublin with us actually looks like.
+              </p>
+            </div>
+            <div className="sm:col-span-2">
+              <div className="relative mx-auto aspect-4/5 w-full max-w-xs overflow-hidden rounded-3xl bg-black shadow-xl">
+                <video
+                  controls
+                  preload="metadata"
+                  poster="/tour/promo-poster.jpg"
+                  className="h-full w-full object-cover"
+                >
+                  <source src="/tour/promo.mp4" type="video/mp4" />
+                </video>
+              </div>
             </div>
           </div>
         </Reveal>
@@ -207,14 +241,34 @@ export default function TheTourPage() {
           </div>
         </Reveal>
 
+        <Reveal delay={430}>
+          <div className="relative mx-auto mt-10 h-12 w-32">
+            <Image
+              src="/icons/strokes.png"
+              alt=""
+              fill
+              sizes="128px"
+              className="object-contain"
+            />
+          </div>
+        </Reveal>
+
         <Reveal delay={450}>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
             <div className="rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-bold text-brand-dark">Included</h2>
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-4 space-y-3">
                 {included.map((item) => (
-                  <li key={item.label} className="flex items-center gap-2 text-gray-700">
-                    <span>{item.icon}</span>
+                  <li key={item.label} className="flex items-center gap-3 text-gray-700">
+                    <span className="relative h-8 w-8 shrink-0">
+                      <Image
+                        src={item.icon}
+                        alt=""
+                        fill
+                        sizes="32px"
+                        className="object-contain"
+                      />
+                    </span>
                     <span>{item.label}</span>
                   </li>
                 ))}
