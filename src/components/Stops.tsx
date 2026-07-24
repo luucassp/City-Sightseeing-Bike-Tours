@@ -11,7 +11,7 @@ const stops: MediaItem[] = [
     title: "Dublin Castle",
     desc: "Once the seat of power in Ireland, now the stage for official State ceremonies.",
     longDesc:
-      "For almost 800 years, this was the centre of British power in Ireland. The medieval fortress was transformed over the centuries into a Georgian palace, and the grounds today still include the castle gardens and attractions like the Chester Beatty museum.",
+      "A 13th-century fortress at the heart of Irish governance, with lavish State Apartments featuring Waterford crystal chandeliers, a medieval Undercroft and the Gothic Revival Chapel Royal. Its gardens offer a peaceful break from the busy city streets.",
     url: "/stops/dublin-castle.jpg",
     span: "col-span-2 row-span-2",
   },
@@ -21,7 +21,7 @@ const stops: MediaItem[] = [
     title: "St Patrick's Cathedral",
     desc: "Ireland's largest cathedral, dedicated to the country's patron saint since the Middle Ages.",
     longDesc:
-      "Ireland's largest cathedral was built on the site where, according to tradition, St Patrick baptised the first converts. It stands out for its Gothic architecture and as the burial place of Jonathan Swift, author of Gulliver's Travels.",
+      "Ireland's largest cathedral, built in 1191 and dedicated to the country's patron saint. Home to the tomb of Jonathan Swift, author of 'Gulliver's Travels', with striking Gothic architecture and stained glass, and a history that includes sheltering locals during the 1641 Irish Rebellion.",
     url: "/stops/st-patricks-cathedral.jpg",
     span: "col-span-1 row-span-1",
   },
@@ -31,7 +31,7 @@ const stops: MediaItem[] = [
     title: "The Liberties",
     desc: "Historic neighbourhood of narrow streets, traditional markets and strong local identity.",
     longDesc:
-      "One of Dublin's oldest neighbourhoods, dating back to the 12th century, when it lay outside the city walls. It was once an industrial hub of distilleries and breweries, and today blends history with modern urban life — look out for the colourful doors of the 19th-century workers' cottages.",
+      "One of Dublin's oldest neighbourhoods, dating back to the 12th century and once located outside the city walls. Today it mixes traditional markets, craft distilleries and hidden gems like Marsh's Library, Ireland's oldest public library.",
     url: "/stops/the-liberties.jpg",
     span: "col-span-1 row-span-2",
   },
@@ -41,7 +41,7 @@ const stops: MediaItem[] = [
     title: "Guinness Storehouse",
     desc: "Dublin's most visited attraction, birthplace of Ireland's most famous beer.",
     longDesc:
-      "Housed in a seven-storey building shaped like a giant pint glass, it tells the 250-year story of Ireland's most famous brand and how Guinness became a commercial success with huge influence on the city.",
+      "Dublin's most visited attraction, housed in a seven-storey building shaped like a giant pint glass. Learn about the 250-year history of Ireland's most famous export, explore vintage advertising, and take in panoramic views of the city from the Gravity Bar.",
     url: "/stops/guinness-storehouse.jpg",
     span: "col-span-2 row-span-1",
   },
@@ -51,7 +51,7 @@ const stops: MediaItem[] = [
     title: "IMMA / Royal Hospital",
     desc: "Modern art museum housed in a former royal hospital, with formal gardens.",
     longDesc:
-      "A 17th-century building inspired by Les Invalides in Paris, now home to the Irish Museum of Modern Art. A curious transition: from military hospital to contemporary art gallery.",
+      "A magnificent 17th-century building inspired by Les Invalides in Paris, now home to the Irish Museum of Modern Art. Formal gardens and a collection of over 3,500 artworks, with the Great Hall and Chapel among its architectural highlights.",
     url: "/stops/imma-royal-hospital.jpg",
     span: "col-span-1 row-span-1",
   },
@@ -61,7 +61,7 @@ const stops: MediaItem[] = [
     title: "Kilmainham Gaol",
     desc: "Former prison that witnessed decisive moments in Ireland's fight for independence.",
     longDesc:
-      "An 18th-century former prison that played a central role in Ireland's struggle for independence, including executions linked to the 1916 Easter Rising.",
+      "A former prison, built in 1796, that held many leaders of Ireland's fight for independence, including participants of the 1916 Easter Rising. Its austere cells and restoration exhibition offer a powerful look at Ireland's history.",
     url: "/stops/kilmainham-gaol.jpg",
     span: "col-span-1 row-span-1",
   },
@@ -71,7 +71,7 @@ const stops: MediaItem[] = [
     title: "St Patrick's Tower",
     desc: "Former windmill next to the Guinness factory, one of the city's most curious landmarks.",
     longDesc:
-      "A former windmill, one of the tallest in Europe in its day, linked to a distillery that once produced millions of litres of whiskey a year — a great spot to talk about the history of Irish whiskey.",
+      "A unique octagonal smock windmill dating back to 1757, once part of the Roe Distillery. Europe's tallest windmill and no longer operational, its green copper dome remains an iconic landmark in the Liberties.",
     url: "/stops/st-patricks-tower.jpg",
     span: "col-span-1 row-span-1",
   },
@@ -81,7 +81,7 @@ const stops: MediaItem[] = [
     title: "Christ Church Cathedral",
     desc: "Medieval cathedral, one of Dublin's oldest and most iconic buildings.",
     longDesc:
-      "Founded in the 11th century, it stands at the heart of medieval Dublin. Striking Gothic architecture and a long history dating back to the Viking era.",
+      "Founded in 1028 and standing at the heart of medieval Dublin, with one of the largest crypts in Britain and Ireland. Climb the belfry to ring the bells, and look out for the mummified cat and rat immortalised in James Joyce's 'Finnegans Wake'.",
     url: "/stops/christ-church.jpg",
     span: "col-span-2 md:col-span-4 row-span-1",
   },
