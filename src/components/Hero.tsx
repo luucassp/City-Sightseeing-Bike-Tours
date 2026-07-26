@@ -4,7 +4,7 @@ import Image from "next/image";
 import BookingButton from "@/components/BookingButton";
 
 export default function Hero() {
-  const [showVideo, setShowVideo] = useState(false);
+  const [showVideo, setShowVideo] = useState(true);
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -32,6 +32,7 @@ export default function Hero() {
           muted
           loop
           playsInline
+          preload="auto"
           poster="/hero.jpg"
           className="absolute top-1/2 left-1/2 h-auto min-h-full w-auto min-w-full -translate-x-1/2 -translate-y-1/2"
         >
