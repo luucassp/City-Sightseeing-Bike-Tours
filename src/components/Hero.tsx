@@ -7,23 +7,17 @@ export default function Hero() {
   const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
-    const desktopQuery = window.matchMedia("(min-width: 768px)");
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const update = () =>
-      setShowVideo(desktopQuery.matches && !motionQuery.matches);
+    const update = () => setShowVideo(!motionQuery.matches);
     update();
 
-    desktopQuery.addEventListener("change", update);
     motionQuery.addEventListener("change", update);
-    return () => {
-      desktopQuery.removeEventListener("change", update);
-      motionQuery.removeEventListener("change", update);
-    };
+    return () => motionQuery.removeEventListener("change", update);
   }, []);
 
   return (
-    <section className="relative flex min-h-155 items-center justify-center overflow-hidden text-center text-white">
+    <section className="relative flex min-h-dvh items-center justify-center overflow-hidden text-center text-white">
       <Image
         src="/hero.jpg"
         alt=""
@@ -39,8 +33,13 @@ export default function Hero() {
           loop
           playsInline
           poster="/hero.jpg"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute top-1/2 left-1/2 h-auto min-h-full w-auto min-w-full -translate-x-1/2 -translate-y-1/2"
         >
+          <source
+            media="(max-width: 767px)"
+            src="/videos/hero-loop-mobile.mp4"
+            type="video/mp4"
+          />
           <source src="/videos/hero-loop.mp4" type="video/mp4" />
         </video>
       )}

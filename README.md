@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚲 Sightseeing Bike Tours — Dublin
 
-## Getting Started
+Site institucional e de vendas para uma empresa de passeios guiados de bicicleta e e-bike em Dublin. Construído com **Next.js (App Router)**, **React 19**, **TypeScript** e **Tailwind CSS v4**.
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?logo=tailwindcss&logoColor=white)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 📖 Sobre o projeto
+
+Todo o conteúdo do site fica em **inglês** (público-alvo turista/estrangeiro), enquanto a documentação abaixo está em português para facilitar a manutenção. O site apresenta o passeio, a rota, os preços, e permite que o visitante entre em contato ou gerencie uma reserva — hoje via formulários simples (veja [Pontas soltas](#-pontas-soltas--próximos-passos)).
+
+## 🧩 Como o projeto funciona
+
+O app usa o **App Router** do Next.js: cada pasta dentro de `src/app/` vira uma rota, e o arquivo `page.tsx` dentro dela é o conteúdo daquela página. Todo o site é envolvido pelo mesmo layout (`src/app/layout.tsx`), que fixa o `Navbar` no topo e o `Footer` embaixo em **todas** as páginas.
+
+A página inicial (Home) é montada empilhando componentes de seção, cada um vivendo em `src/components/`:
+
+```mermaid
+flowchart TD
+    Layout["layout.tsx — Navbar + Footer (presentes em toda página)"] --> Home["app/page.tsx (Home)"]
+    Home --> Hero["Hero — banner + vídeo/imagem de topo"]
+    Home --> PricingCards["PricingCards — bicicleta vs e-bike"]
+    Home --> MeetingPointNotice["MeetingPointNotice — aviso do ponto de encontro"]
+    Home --> Stops["Stops"]
+    Stops --> Gallery["interactive-bento-gallery — galeria clicável das paradas"]
+    Stops --> RouteMap["RouteMap — mapa 3D interativo com bike animada"]
+    Home --> Testimonials["Testimonials — depoimentos"]
+    Home --> OpeningHours["OpeningHours — horário de funcionamento"]
+    Home --> FindUs["FindUs — endereço + link do Google Maps"]
+    Home --> ContactCTA["ContactCTA — chamada final para contato"]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+As demais páginas (`/the-tour`, `/private-hire`, `/contact`, `/booking`) são independentes, mas reaproveitam dois componentes de efeito visual:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **`Reveal.tsx`** — envolve um bloco de conteúdo e o anima (fade + slide para cima) quando ele entra na tela ao rolar a página.
+- **`ScrollLine.tsx`** — desenha uma linha tracejada em SVG que se "revela" conforme o scroll, com um ícone de bike 🚲 percorrendo o traçado.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗺️ Onde encontrar cada coisa
 
-## Learn More
+Guia rápido de "quero mudar X, vou em Y":
 
-To learn more about Next.js, take a look at the following resources:
+| Quero mudar... | Vou em... |
+|---|---|
+| Texto/imagem do topo (Hero) | [`src/components/Hero.tsx`](src/components/Hero.tsx) |
+| Preços das bikes (tradicional/e-bike) | [`src/components/PricingCards.tsx`](src/components/PricingCards.tsx) |
+| Paradas do passeio (fotos, descrições) | [`src/components/Stops.tsx`](src/components/Stops.tsx) |
+| Mapa 3D da rota / animação da bike no mapa | [`src/components/RouteMap.tsx`](src/components/RouteMap.tsx) |
+| Depoimentos de clientes | [`src/components/Testimonials.tsx`](src/components/Testimonials.tsx) |
+| Horário de funcionamento | [`src/components/OpeningHours.tsx`](src/components/OpeningHours.tsx) |
+| Endereço / link do Google Maps | [`src/components/FindUs.tsx`](src/components/FindUs.tsx) |
+| Menu de navegação (topo) | [`src/components/Navbar.tsx`](src/components/Navbar.tsx) |
+| Rodapé, redes sociais, logos de parceiros | [`src/components/Footer.tsx`](src/components/Footer.tsx) |
+| Cores da marca (vermelho, dourado, escuro) | [`src/app/globals.css`](src/app/globals.css) (bloco `@theme`) |
+| Animação de "zoom lento" do Hero no mobile | [`src/app/globals.css`](src/app/globals.css) (`--animate-hero-zoom`) |
+| Fotos das paradas do tour | [`public/stops/`](public/stops) |
+| Fotos/vídeo do grupo e do guia | [`public/tour/`](public/tour) |
+| Vídeo de fundo do Hero (desktop) | [`public/videos/hero-loop.mp4`](public/videos) |
+| Ícones customizados (capacete, fone, etc.) | [`public/icons/`](public/icons) |
+| Logos dos parceiros no rodapé | [`public/partners/`](public/partners) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧭 Páginas do site
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Rota | Arquivo | Conteúdo |
+|---|---|---|
+| `/` | [`src/app/page.tsx`](src/app/page.tsx) | Home — todas as seções principais |
+| `/the-tour` | [`src/app/the-tour/page.tsx`](src/app/the-tour/page.tsx) | Detalhes do passeio guiado |
+| `/points-of-interest` | [`src/app/points-of-interest/page.tsx`](src/app/points-of-interest/page.tsx) | Galeria + mapa das paradas (reaproveita `Stops`) |
+| `/private-hire` | [`src/app/private-hire/page.tsx`](src/app/private-hire/page.tsx) | Passeio privado sob medida |
+| `/contact` | [`src/app/contact/page.tsx`](src/app/contact/page.tsx) | Formulário de contato |
+| `/booking` | [`src/app/booking/page.tsx`](src/app/booking/page.tsx) | Gerenciar reserva (reagendar/cancelar) |
+| `/privacy-policy` | [`src/app/privacy-policy/page.tsx`](src/app/privacy-policy/page.tsx) | Política de privacidade |
+| `/terms-and-conditions` | [`src/app/terms-and-conditions/page.tsx`](src/app/terms-and-conditions/page.tsx) | Termos e condições |
 
-## Deploy on Vercel
+## ⚙️ Como rodar localmente
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm install     # instala as dependências
+npm run dev     # inicia em http://localhost:3000
+npm run build   # build de produção
+npm run start   # roda o build de produção
+npm run lint    # checagem de lint (ESLint)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Stack técnica
+
+- **Next.js 16** (App Router, Webpack)
+- **React 19** + **TypeScript 5**
+- **Tailwind CSS v4** — configuração via `@theme` direto no [`globals.css`](src/app/globals.css) (sem `tailwind.config.js`)
+- **MapLibre GL** — carregado via CDN dentro de `RouteMap.tsx` (não é dependência do `package.json`) para o mapa 3D interativo
+
+## 🚧 Pontas soltas / próximos passos
+
+Coisas que ainda não estão de fato "ligadas" e valem atenção antes de considerar o site pronto para produção:
+
+- Os formulários de **Contact** e **Manage Booking** ainda não enviam para lugar nenhum (sem `action`/backend/serviço de e-mail conectado).
+- `FindUs.tsx` ainda tem o endereço e o link do Google Maps como placeholder (`[Full meeting point address — replace with the real address]`).
+- Vídeo de fundo do Hero só toca em telas ≥768px (desktop); no mobile é substituído por imagem estática com zoom lento, por performance.
+
+## ☁️ Deploy
+
+Projeto pronto para deploy na [Vercel](https://vercel.com/new) (padrão para apps Next.js) — basta importar o repositório, sem configuração adicional.
