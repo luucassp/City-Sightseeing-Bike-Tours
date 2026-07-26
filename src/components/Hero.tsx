@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import BookingButton from "@/components/BookingButton";
 
 export default function Hero() {
   const [showVideo, setShowVideo] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -15,6 +16,16 @@ export default function Hero() {
     motionQuery.addEventListener("change", update);
     return () => motionQuery.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    // React can hydrate <video muted> without setting the underlying
+    // `muted` IDL property, which makes mobile browsers block autoplay.
+    // Set it imperatively and (re)try play() to be safe.
+    video.muted = true;
+    video.play().catch(() => {});
+  }, [showVideo]);
 
   return (
     <section className="relative flex min-h-dvh items-center justify-center overflow-hidden text-center text-white">
@@ -28,6 +39,7 @@ export default function Hero() {
       />
       {showVideo && (
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
