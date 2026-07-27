@@ -247,19 +247,6 @@ export default function RouteMap() {
             },
           });
 
-          try {
-            map.addLayer({
-              id: "sky",
-              type: "sky",
-              paint: {
-                "sky-type": "atmosphere",
-                "sky-atmosphere-sun-intensity": 10,
-              },
-            });
-          } catch {
-            // Map style doesn't support the sky layer — continue without it.
-          }
-
           routeStops.forEach((stop) => {
             const el = document.createElement("div");
             el.className =

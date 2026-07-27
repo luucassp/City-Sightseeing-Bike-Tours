@@ -64,6 +64,11 @@ async function saveAction(formData: FormData) {
     }
   }
 
+  const rawDiscount = Number(formData.get("discountPercent") ?? 0);
+  const discountPercent = Number.isFinite(rawDiscount)
+    ? Math.min(100, Math.max(0, Math.round(rawDiscount)))
+    : 0;
+
   await updatePopupSettings({
     enabled: formData.get("enabled") === "on",
     title: String(formData.get("title") ?? "").trim().slice(0, 120),
@@ -71,6 +76,7 @@ async function saveAction(formData: FormData) {
     imageUrl,
     ctaText: String(formData.get("ctaText") ?? "").trim().slice(0, 40),
     ctaLink: String(formData.get("ctaLink") ?? "").trim().slice(0, 500),
+    discountPercent,
   });
   updateTag(POPUP_CACHE_TAG);
 
@@ -163,6 +169,27 @@ export default async function AdminPage({
           />
           <span className="font-semibold text-brand-dark">
             Show popup on the site
+          </span>
+        </label>
+
+        <label className="flex flex-col gap-1.5">
+          <span className="text-sm font-semibold text-brand-dark">
+            Discount %{" "}
+            <span className="font-normal text-gray-400">(optional)</span>
+          </span>
+          <input
+            type="number"
+            name="discountPercent"
+            defaultValue={settings.discountPercent || ""}
+            min={0}
+            max={100}
+            placeholder="e.g. 10"
+            className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
+          />
+          <span className="text-xs text-gray-500">
+            While the popup above is on, this also updates the bike prices
+            on the site to show the discount (crossed-out original price +
+            new price). Leave at 0 to keep prices as-is.
           </span>
         </label>
 

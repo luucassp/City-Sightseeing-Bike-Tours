@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { PopupSettings } from "@/lib/popup";
 
 const STORAGE_KEY = "promo-popup-dismissed";
@@ -8,15 +9,18 @@ const SHOW_DELAY_MS = 900;
 
 export default function PromoPopup({ settings }: { settings: PopupSettings }) {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
   const dismissKey = `${settings.title}|${settings.message}|${settings.imageUrl}|${settings.ctaText}|${settings.ctaLink}`;
 
   useEffect(() => {
+    if (isAdmin) return;
     if (typeof window === "undefined") return;
     if (window.sessionStorage.getItem(STORAGE_KEY) === dismissKey) return;
 
     const timer = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [dismissKey]);
+  }, [dismissKey, isAdmin]);
 
   useEffect(() => {
     if (!visible) return;

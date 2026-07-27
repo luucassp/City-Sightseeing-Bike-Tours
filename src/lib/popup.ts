@@ -5,6 +5,7 @@ export type PopupSettings = {
   imageUrl: string;
   ctaText: string;
   ctaLink: string;
+  discountPercent: number;
 };
 
 type PopupSettingsRow = {
@@ -14,6 +15,7 @@ type PopupSettingsRow = {
   image_url: string;
   cta_text: string;
   cta_link: string;
+  discount_percent: number;
 };
 
 const EMPTY_SETTINGS: PopupSettings = {
@@ -23,9 +25,11 @@ const EMPTY_SETTINGS: PopupSettings = {
   imageUrl: "",
   ctaText: "",
   ctaLink: "",
+  discountPercent: 0,
 };
 
-const SELECT_FIELDS = "enabled,title,message,image_url,cta_text,cta_link";
+const SELECT_FIELDS =
+  "enabled,title,message,image_url,cta_text,cta_link,discount_percent";
 
 export const POPUP_CACHE_TAG = "popup-settings";
 
@@ -43,6 +47,7 @@ function fromRow(row: PopupSettingsRow): PopupSettings {
     imageUrl: row.image_url,
     ctaText: row.cta_text,
     ctaLink: row.cta_link,
+    discountPercent: row.discount_percent,
   };
 }
 
@@ -119,6 +124,7 @@ export async function updatePopupSettings(settings: PopupSettings): Promise<void
       image_url: settings.imageUrl,
       cta_text: settings.ctaText,
       cta_link: settings.ctaLink,
+      discount_percent: settings.discountPercent,
       updated_at: new Date().toISOString(),
     }),
   });
