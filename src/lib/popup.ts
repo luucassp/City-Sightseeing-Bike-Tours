@@ -5,7 +5,6 @@ export type PopupSettings = {
   imageUrl: string;
   ctaText: string;
   ctaLink: string;
-  discountPercent: number;
 };
 
 type PopupSettingsRow = {
@@ -15,7 +14,6 @@ type PopupSettingsRow = {
   image_url: string;
   cta_text: string;
   cta_link: string;
-  discount_percent: number;
 };
 
 const EMPTY_SETTINGS: PopupSettings = {
@@ -25,11 +23,9 @@ const EMPTY_SETTINGS: PopupSettings = {
   imageUrl: "",
   ctaText: "",
   ctaLink: "",
-  discountPercent: 0,
 };
 
-const SELECT_FIELDS =
-  "enabled,title,message,image_url,cta_text,cta_link,discount_percent";
+const SELECT_FIELDS = "enabled,title,message,image_url,cta_text,cta_link";
 
 export const POPUP_CACHE_TAG = "popup-settings";
 
@@ -47,7 +43,6 @@ function fromRow(row: PopupSettingsRow): PopupSettings {
     imageUrl: row.image_url,
     ctaText: row.cta_text,
     ctaLink: row.cta_link,
-    discountPercent: row.discount_percent,
   };
 }
 
@@ -124,7 +119,6 @@ export async function updatePopupSettings(settings: PopupSettings): Promise<void
       image_url: settings.imageUrl,
       cta_text: settings.ctaText,
       cta_link: settings.ctaLink,
-      discount_percent: settings.discountPercent,
       updated_at: new Date().toISOString(),
     }),
   });
@@ -136,7 +130,7 @@ export async function updatePopupSettings(settings: PopupSettings): Promise<void
 }
 
 const IMAGE_BUCKET = "popup-images";
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 1 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -155,7 +149,9 @@ export async function uploadPopupImage(file: File): Promise<string> {
     throw new Error("Image must be a JPEG, PNG, WEBP, or GIF file.");
   }
   if (file.size > MAX_IMAGE_BYTES) {
-    throw new Error("Image must be 5MB or smaller.");
+    throw new Error(
+      "Image must be 1MB or smaller — tourists open this on mobile data, so a large file just means they never see it in time.",
+    );
   }
 
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -14,6 +14,11 @@ import {
   updatePopupSettings,
   uploadPopupImage,
 } from "@/lib/popup";
+import {
+  PROMOTION_CACHE_TAG,
+  getPromotionFresh,
+  updatePromotion,
+} from "@/lib/promotion";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -46,7 +51,31 @@ async function logoutAction() {
   redirect("/admin");
 }
 
-async function saveAction(formData: FormData) {
+async function savePromotionAction(formData: FormData) {
+  "use server";
+  const jar = await cookies();
+  if (!isValidSessionToken(jar.get(ADMIN_SESSION_COOKIE)?.value)) {
+    redirect("/admin");
+  }
+
+  const rawPercent = Number(formData.get("percent") ?? 0);
+  const percent = Number.isFinite(rawPercent)
+    ? Math.min(100, Math.max(0, Math.round(rawPercent)))
+    : 0;
+
+  const current = await getPromotionFresh();
+  await updatePromotion({
+    active: formData.get("active") === "on",
+    percent,
+    startsAt: current.startsAt,
+    endsAt: current.endsAt,
+  });
+  updateTag(PROMOTION_CACHE_TAG);
+
+  redirect("/admin?saved=promotion");
+}
+
+async function savePopupAction(formData: FormData) {
   "use server";
   const jar = await cookies();
   if (!isValidSessionToken(jar.get(ADMIN_SESSION_COOKIE)?.value)) {
@@ -64,11 +93,6 @@ async function saveAction(formData: FormData) {
     }
   }
 
-  const rawDiscount = Number(formData.get("discountPercent") ?? 0);
-  const discountPercent = Number.isFinite(rawDiscount)
-    ? Math.min(100, Math.max(0, Math.round(rawDiscount)))
-    : 0;
-
   await updatePopupSettings({
     enabled: formData.get("enabled") === "on",
     title: String(formData.get("title") ?? "").trim().slice(0, 120),
@@ -76,11 +100,10 @@ async function saveAction(formData: FormData) {
     imageUrl,
     ctaText: String(formData.get("ctaText") ?? "").trim().slice(0, 40),
     ctaLink: String(formData.get("ctaLink") ?? "").trim().slice(0, 500),
-    discountPercent,
   });
   updateTag(POPUP_CACHE_TAG);
 
-  redirect("/admin?saved=1");
+  redirect("/admin?saved=popup");
 }
 
 export default async function AdminPage({
@@ -95,9 +118,9 @@ export default async function AdminPage({
   if (!authed) {
     return (
       <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-4 py-16">
-        <h1 className="text-2xl font-bold text-brand-dark">Site Popup Admin</h1>
+        <h1 className="text-2xl font-bold text-brand-dark">Site Admin</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Enter the admin password to manage the announcement popup.
+          Enter the admin password to manage promotions and the popup.
         </p>
         <form action={loginAction} className="mt-6 flex flex-col gap-3">
           <input
@@ -124,12 +147,15 @@ export default async function AdminPage({
     );
   }
 
-  const settings = await getPopupSettingsFresh();
+  const [settings, promotion] = await Promise.all([
+    getPopupSettingsFresh(),
+    getPromotionFresh(),
+  ]);
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-brand-dark">Site Popup Admin</h1>
+        <h1 className="text-2xl font-bold text-brand-dark">Site Admin</h1>
         <form action={logoutAction}>
           <button
             type="submit"
@@ -139,171 +165,222 @@ export default async function AdminPage({
           </button>
         </form>
       </div>
-      <p className="mt-1 text-sm text-gray-500">
-        Control the announcement popup shown to visitors on every page.
-        Changes go live immediately after saving.
-      </p>
 
-      {params.saved === "1" && (
-        <p className="mt-4 rounded-lg bg-green-50 px-4 py-2.5 text-sm font-medium text-green-700">
-          Saved. The popup is now updated on the live site.
+      {/* Promotion */}
+      <section className="mt-8 rounded-2xl border border-gray-200 p-5">
+        <h2 className="text-lg font-bold text-brand-dark">Promotion</h2>
+        <p className="mt-1 text-sm text-gray-500">
+          Controls the bike prices shown on the site (crossed-out original +
+          discounted price). Independent from the popup below — you can run
+          a discount without showing a popup, or show a popup without a
+          discount.
         </p>
-      )}
-      {params.imageError && (
-        <p className="mt-4 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-brand-red">
-          {params.imageError}
-        </p>
-      )}
 
-      <form
-        action={saveAction}
-        encType="multipart/form-data"
-        className="mt-6 flex flex-col gap-5"
-      >
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            name="enabled"
-            defaultChecked={settings.enabled}
-            className="h-5 w-5 accent-brand-red"
-          />
-          <span className="font-semibold text-brand-dark">
-            Show popup on the site
-          </span>
-        </label>
+        {params.saved === "promotion" && (
+          <p className="mt-4 rounded-lg bg-green-50 px-4 py-2.5 text-sm font-medium text-green-700">
+            Saved. Prices on the site are updated.
+          </p>
+        )}
 
-        <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-semibold text-brand-dark">
-            Discount %{" "}
-            <span className="font-normal text-gray-400">(optional)</span>
-          </span>
-          <input
-            type="number"
-            name="discountPercent"
-            defaultValue={settings.discountPercent || ""}
-            min={0}
-            max={100}
-            placeholder="e.g. 10"
-            className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
-          />
-          <span className="text-xs text-gray-500">
-            While the popup above is on, this also updates the bike prices
-            on the site to show the discount (crossed-out original price +
-            new price). Leave at 0 to keep prices as-is.
-          </span>
-        </label>
-
-        <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-semibold text-brand-dark">Title</span>
-          <input
-            type="text"
-            name="title"
-            defaultValue={settings.title}
-            maxLength={120}
-            placeholder="e.g. Summer Sale!"
-            className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
-          />
-        </label>
-
-        <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-semibold text-brand-dark">Text</span>
-          <textarea
-            name="message"
-            defaultValue={settings.message}
-            maxLength={500}
-            rows={4}
-            placeholder="e.g. Book this week and save 10% on all tours."
-            className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
-          />
-        </label>
-
-        <div className="flex flex-col gap-1.5">
-          <span className="text-sm font-semibold text-brand-dark">
-            Image <span className="font-normal text-gray-400">(optional)</span>
-          </span>
-
-          {settings.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={settings.imageUrl}
-              alt="Current popup image"
-              className="h-32 w-full rounded-lg object-cover"
-            />
-          )}
-
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs text-gray-500">
-              Upload a photo from your computer (JPEG, PNG, WEBP or GIF, max
-              5MB). Uploading replaces the current image.
-            </span>
+        <form action={savePromotionAction} className="mt-4 flex flex-col gap-4">
+          <label className="flex items-center gap-3">
             <input
-              type="file"
-              name="imageFile"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-gold file:px-4 file:py-1.5 file:font-semibold file:text-brand-dark"
+              type="checkbox"
+              name="active"
+              defaultChecked={promotion.active}
+              className="h-5 w-5 accent-brand-red"
             />
+            <span className="font-semibold text-brand-dark">
+              Apply discount to prices
+            </span>
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs text-gray-500">
-              ...or paste a link to an image already hosted elsewhere
+            <span className="text-sm font-semibold text-brand-dark">
+              Discount %
             </span>
             <input
-              type="url"
-              name="imageUrl"
-              defaultValue={settings.imageUrl}
-              maxLength={500}
-              placeholder="https://..."
+              type="number"
+              name="percent"
+              defaultValue={promotion.percent || ""}
+              min={0}
+              max={100}
+              placeholder="e.g. 10"
               className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
             />
           </label>
-        </div>
 
-        <div className="rounded-lg border border-gray-200 p-4">
-          <p className="text-sm font-semibold text-brand-dark">
-            Button <span className="font-normal text-gray-400">(optional)</span>
+          <button
+            type="submit"
+            className="self-start rounded-full bg-brand-gold px-8 py-3 font-bold text-brand-dark shadow-lg transition hover:scale-105"
+          >
+            Save promotion
+          </button>
+        </form>
+      </section>
+
+      {/* Popup */}
+      <section className="mt-8 rounded-2xl border border-gray-200 p-5">
+        <h2 className="text-lg font-bold text-brand-dark">Popup</h2>
+        <p className="mt-1 text-sm text-gray-500">
+          The announcement popup shown to visitors on every page. Write{" "}
+          <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">
+            {"{percent}"}
+          </code>{" "}
+          anywhere in the title or text and it&apos;s replaced with the
+          current discount % from the Promotion section above — so the copy
+          can never say a different number than the actual price.
+        </p>
+        <a
+          href="/?previewPopup=1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-sm font-semibold text-brand-red hover:underline"
+        >
+          Preview popup on the live site ↗
+        </a>
+
+        {params.saved === "popup" && (
+          <p className="mt-4 rounded-lg bg-green-50 px-4 py-2.5 text-sm font-medium text-green-700">
+            Saved. The popup is now updated on the live site.
           </p>
-          <p className="mt-0.5 text-xs text-gray-500">
-            Leave both blank to just show a &quot;Got it&quot; close button
-            instead.
+        )}
+        {params.imageError && (
+          <p className="mt-4 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-brand-red">
+            {params.imageError}
           </p>
-          <div className="mt-3 flex flex-col gap-3">
+        )}
+
+        <form
+          action={savePopupAction}
+          encType="multipart/form-data"
+          className="mt-4 flex flex-col gap-5"
+        >
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="enabled"
+              defaultChecked={settings.enabled}
+              className="h-5 w-5 accent-brand-red"
+            />
+            <span className="font-semibold text-brand-dark">
+              Show popup on the site
+            </span>
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-brand-dark">Title</span>
+            <input
+              type="text"
+              name="title"
+              defaultValue={settings.title}
+              maxLength={120}
+              placeholder="e.g. Summer Sale!"
+              className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-brand-dark">Text</span>
+            <textarea
+              name="message"
+              defaultValue={settings.message}
+              maxLength={500}
+              rows={4}
+              placeholder="e.g. Book this week and save {percent}% on all tours."
+              className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
+            />
+          </label>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-brand-dark">
+              Image <span className="font-normal text-gray-400">(optional)</span>
+            </span>
+
+            {settings.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={settings.imageUrl}
+                alt="Current popup image"
+                className="h-32 w-full rounded-lg object-cover"
+              />
+            )}
+
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-semibold text-brand-dark">
-                Button text
+              <span className="text-xs text-gray-500">
+                Upload a photo from your computer (JPEG, PNG, WEBP or GIF,
+                max 1MB — keep it small, visitors open this on mobile data).
+                Uploading replaces the current image.
               </span>
               <input
-                type="text"
-                name="ctaText"
-                defaultValue={settings.ctaText}
-                maxLength={40}
-                placeholder="e.g. Get tickets now"
-                className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
+                type="file"
+                name="imageFile"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-gold file:px-4 file:py-1.5 file:font-semibold file:text-brand-dark"
               />
             </label>
+
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-semibold text-brand-dark">
-                Button link
+              <span className="text-xs text-gray-500">
+                ...or paste a link to an image already hosted elsewhere
               </span>
               <input
-                type="text"
-                name="ctaLink"
-                defaultValue={settings.ctaLink}
+                type="url"
+                name="imageUrl"
+                defaultValue={settings.imageUrl}
                 maxLength={500}
-                placeholder="e.g. /booking or https://..."
+                placeholder="https://..."
                 className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
               />
             </label>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          className="rounded-full bg-brand-gold px-8 py-3 font-bold text-brand-dark shadow-lg transition hover:scale-105 self-start"
-        >
-          Save
-        </button>
-      </form>
+          <div className="rounded-lg border border-gray-200 p-4">
+            <p className="text-sm font-semibold text-brand-dark">
+              Button <span className="font-normal text-gray-400">(optional)</span>
+            </p>
+            <p className="mt-0.5 text-xs text-gray-500">
+              Leave both blank to just show a &quot;Got it&quot; close button
+              instead.
+            </p>
+            <div className="mt-3 flex flex-col gap-3">
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm font-semibold text-brand-dark">
+                  Button text
+                </span>
+                <input
+                  type="text"
+                  name="ctaText"
+                  defaultValue={settings.ctaText}
+                  maxLength={40}
+                  placeholder="e.g. Get tickets now"
+                  className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm font-semibold text-brand-dark">
+                  Button link
+                </span>
+                <input
+                  type="text"
+                  name="ctaLink"
+                  defaultValue={settings.ctaLink}
+                  maxLength={500}
+                  placeholder="e.g. /booking or https://..."
+                  className="rounded-lg border border-gray-300 px-4 py-2.5 focus:border-brand-red focus:outline-none"
+                />
+              </label>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="self-start rounded-full bg-brand-gold px-8 py-3 font-bold text-brand-dark shadow-lg transition hover:scale-105"
+          >
+            Save popup
+          </button>
+        </form>
+      </section>
     </div>
   );
 }

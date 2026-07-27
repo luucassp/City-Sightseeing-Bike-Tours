@@ -1,9 +1,21 @@
+import { Suspense } from "react";
 import { getPopupSettings } from "@/lib/popup";
+import { effectivePercent, getPromotion } from "@/lib/promotion";
 import PromoPopup from "@/components/PromoPopup";
 
 export default async function PromoPopupLoader() {
-  const settings = await getPopupSettings();
-  if (!settings.enabled || !settings.title.trim()) return null;
+  const [settings, promotion] = await Promise.all([
+    getPopupSettings(),
+    getPromotion(),
+  ]);
+  if (!settings.title.trim()) return null;
 
-  return <PromoPopup settings={settings} />;
+  return (
+    <Suspense fallback={null}>
+      <PromoPopup
+        settings={settings}
+        discountPercent={effectivePercent(promotion)}
+      />
+    </Suspense>
+  );
 }

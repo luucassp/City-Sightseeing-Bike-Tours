@@ -1,26 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { PopupSettings } from "@/lib/popup";
 
 const STORAGE_KEY = "promo-popup-dismissed";
 const SHOW_DELAY_MS = 900;
 
-export default function PromoPopup({ settings }: { settings: PopupSettings }) {
-  const [visible, setVisible] = useState(false);
+function interpolate(text: string, discountPercent: number) {
+  return text.split("{percent}").join(String(discountPercent));
+}
+
+export default function PromoPopup({
+  settings,
+  discountPercent,
+}: {
+  settings: PopupSettings;
+  discountPercent: number;
+}) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isAdmin = pathname?.startsWith("/admin") ?? false;
+  const isPreview = searchParams.get("previewPopup") === "1";
+  const [visible, setVisible] = useState(isPreview);
   const dismissKey = `${settings.title}|${settings.message}|${settings.imageUrl}|${settings.ctaText}|${settings.ctaLink}`;
 
   useEffect(() => {
-    if (isAdmin) return;
+    if (isAdmin || isPreview) return;
+    if (!settings.enabled) return;
     if (typeof window === "undefined") return;
     if (window.sessionStorage.getItem(STORAGE_KEY) === dismissKey) return;
 
     const timer = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [dismissKey, isAdmin]);
+  }, [dismissKey, isAdmin, isPreview, settings.enabled]);
 
   useEffect(() => {
     if (!visible) return;
@@ -34,11 +47,15 @@ export default function PromoPopup({ settings }: { settings: PopupSettings }) {
 
   function close() {
     setVisible(false);
-    window.sessionStorage.setItem(STORAGE_KEY, dismissKey);
+    if (!isPreview) {
+      window.sessionStorage.setItem(STORAGE_KEY, dismissKey);
+    }
   }
 
   if (!visible) return null;
 
+  const title = interpolate(settings.title, discountPercent);
+  const message = interpolate(settings.message, discountPercent);
   const hasCta = settings.ctaText.trim() !== "" && settings.ctaLink.trim() !== "";
   const isExternalLink = /^https?:\/\//i.test(settings.ctaLink);
 
@@ -50,6 +67,12 @@ export default function PromoPopup({ settings }: { settings: PopupSettings }) {
       aria-labelledby="promo-popup-title"
       onClick={close}
     >
+      {isPreview && (
+        <div className="fixed top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-brand-dark px-4 py-1.5 text-xs font-bold text-white shadow-lg">
+          Preview mode — {settings.enabled ? "popup is ON" : "popup is OFF"}{" "}
+          for real visitors
+        </div>
+      )}
       <div
         className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white text-center shadow-2xl"
         onClick={(event) => event.stopPropagation()}
@@ -76,11 +99,11 @@ export default function PromoPopup({ settings }: { settings: PopupSettings }) {
             id="promo-popup-title"
             className="text-xl font-extrabold leading-tight text-brand-red"
           >
-            {settings.title}
+            {title}
           </h2>
-          {settings.message && (
+          {message && (
             <p className="mt-3 whitespace-pre-line text-gray-600">
-              {settings.message}
+              {message}
             </p>
           )}
 

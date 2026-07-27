@@ -1,6 +1,6 @@
 import Image from "next/image";
 import BookingButton from "@/components/BookingButton";
-import { getPopupSettings } from "@/lib/popup";
+import { effectivePercent, getPromotion } from "@/lib/promotion";
 
 const options = [
   {
@@ -22,8 +22,8 @@ const options = [
 ];
 
 export default async function PricingCards() {
-  const settings = await getPopupSettings();
-  const discountPercent = settings.enabled ? settings.discountPercent : 0;
+  const promotion = await getPromotion();
+  const discountPercent = effectivePercent(promotion);
 
   return (
     <section className="relative overflow-hidden px-4 py-20">
