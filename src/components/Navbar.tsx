@@ -18,7 +18,7 @@ const links = [
 // pill needs its solid glass surface immediately.
 const DARK_BAND_PATHS = ["/", "/points-of-interest", "/the-tour", "/private-hire"];
 
-export default function Navbar() {
+export default function Navbar({ logoUrl }: { logoUrl?: string }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -58,7 +58,7 @@ export default function Navbar() {
         >
           <Link href="/" className="shrink-0">
             <Image
-              src="/logo.png"
+              src={logoUrl || "/logo.png"}
               alt="Sightseeing Bike Tours"
               width={370}
               height={148}

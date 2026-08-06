@@ -54,13 +54,13 @@ function LegalBullet() {
   );
 }
 
-export default function Footer() {
+export default function Footer({ logoUrl }: { logoUrl?: string }) {
   return (
     <footer className="bg-brand-dark py-14 text-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 md:grid-cols-3">
         <div>
           <Image
-            src="/logo-footer.png"
+            src={logoUrl || "/logo-footer.png"}
             alt="Sightseeing Bike Tours"
             width={480}
             height={234}

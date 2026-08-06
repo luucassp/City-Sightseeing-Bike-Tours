@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PromoPopupLoader from "@/components/PromoPopupLoader";
+import { getSiteSettings } from "@/lib/site-settings";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,21 +22,24 @@ export const metadata: Metadata = {
     "Explore Dublin on two wheels with guided bicycle and e-bike tours.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { logoUrl } = await getSiteSettings();
+
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
         <PromoPopupLoader />
-        <Navbar />
+        <Navbar logoUrl={logoUrl} />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer logoUrl={logoUrl} />
       </body>
     </html>
   );
