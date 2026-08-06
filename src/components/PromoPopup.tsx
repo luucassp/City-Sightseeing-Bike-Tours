@@ -80,7 +80,7 @@ export default function PromoPopup({
         <button
           onClick={close}
           aria-label="Close"
-          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-xl leading-none text-white transition hover:bg-black/80"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-xl leading-none text-white transition hover:bg-black/80 active:scale-90"
         >
           &times;
         </button>
@@ -113,14 +113,14 @@ export default function PromoPopup({
               onClick={close}
               target={isExternalLink ? "_blank" : undefined}
               rel={isExternalLink ? "noopener noreferrer" : undefined}
-              className="mt-6 inline-block rounded-full bg-brand-red px-10 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-brand-red-dark"
+              className="mt-6 inline-block rounded-full bg-brand-red px-10 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-brand-red-dark active:scale-95"
             >
               {settings.ctaText}
             </a>
           ) : (
             <button
               onClick={close}
-              className="mt-6 inline-block rounded-full bg-brand-gold px-8 py-2.5 font-bold text-brand-dark shadow-lg transition hover:scale-105"
+              className="mt-6 inline-block rounded-full bg-brand-gold px-8 py-2.5 font-bold text-brand-dark shadow-lg transition hover:scale-105 active:scale-95"
             >
               Got it
             </button>

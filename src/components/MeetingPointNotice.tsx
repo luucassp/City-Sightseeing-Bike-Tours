@@ -5,7 +5,7 @@ export default function MeetingPointNotice() {
         Where to Pick Up Your Bike
       </h2>
       <p className="mt-3 text-gray-600">
-        [Meeting point address — replace with the real address]
+        Drury Street Multi-Storey Car Park (Bike Park), Dublin 2
       </p>
       <p className="mt-2 text-sm text-gray-500">
         Follow the signs on site to find our desk.

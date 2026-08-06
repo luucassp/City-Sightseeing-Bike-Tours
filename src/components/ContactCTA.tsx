@@ -12,7 +12,7 @@ export default function ContactCTA() {
         </p>
         <Link
           href="/contact"
-          className="mt-6 inline-block rounded-full bg-brand-red px-8 py-3 font-bold text-white shadow-lg transition hover:bg-brand-red-dark"
+          className="mt-6 inline-block rounded-full bg-brand-red px-8 py-3 font-bold text-white shadow-lg transition hover:bg-brand-red-dark active:scale-95"
         >
           Contact Us
         </Link>

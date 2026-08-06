@@ -43,7 +43,7 @@ export default function Testimonials() {
       <p className="mt-8 text-center">
         <a
           href="#"
-          className="font-semibold text-brand-red underline decoration-brand-gold decoration-2 underline-offset-4 hover:text-brand-red-dark"
+          className="font-semibold text-brand-red underline decoration-brand-gold decoration-2 underline-offset-4 transition hover:text-brand-red-dark active:text-brand-red-dark"
         >
           See more reviews (add Google/TripAdvisor link) →
         </a>

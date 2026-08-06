@@ -1,6 +1,16 @@
 import Image from "next/image";
+import PageHeroBand from "@/components/PageHeroBand";
 import Reveal from "@/components/Reveal";
 import ScrollLine from "@/components/ScrollLine";
+
+const heroPhotos = [
+  { id: 1, url: "/tour/group-photo.jpg", title: "Group Tour" },
+  { id: 2, url: "/tour-photos/guide-portrait-castle.jpg", title: "Your Guide" },
+  { id: 3, url: "/tour-photos/dublin-castle-record-tower.jpg", title: "Dublin Castle" },
+  { id: 4, url: "/tour-photos/riding-through-dublin.jpg", title: "On the Route" },
+  { id: 5, url: "/tour-photos/guinness-storehouse-gate.jpg", title: "Guinness Storehouse" },
+  { id: 6, url: "/tour-photos/christ-church-cathedral.jpg", title: "Christ Church Cathedral" },
+];
 
 const included = [
   { icon: "/icons/helmet-safety.png", label: "Safety equipment" },
@@ -78,24 +88,30 @@ const routePath = buildRoutePath(ROUTE_HEIGHT, 140, ROUTE_AMPLITUDE, ROUTE_WIDTH
 
 export default function TheTourPage() {
   return (
-    <div className="relative">
-      <ScrollLine
-        className="pointer-events-none absolute inset-y-0 left-1/2 w-screen -translate-x-1/2 opacity-[0.15]"
-        d={routePath}
-        viewBox={`0 0 ${ROUTE_WIDTH} ${ROUTE_HEIGHT}`}
-        preserveAspectRatio="none"
-        bikeImageSrc="/icons/bike-pedal.png"
-        bikeSize={64}
+    <div>
+      <PageHeroBand
+        kicker="Guided Bike Tour · 2h30"
+        title={
+          <>
+            Experience Dublin on <span className="text-brand-gold">two wheels</span>
+          </>
+        }
+        subtitle="Two daily departures. A local guide. Stories maps don't tell."
+        photos={heroPhotos}
       />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-4 py-16">
-        <Reveal delay={0}>
-          <h1 className="text-4xl font-bold text-brand-dark">
-            Experience Dublin on two wheels
-          </h1>
-        </Reveal>
+      <div className="relative">
+        <ScrollLine
+          className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-screen -translate-x-1/2 opacity-[0.15] sm:block"
+          d={routePath}
+          viewBox={`0 0 ${ROUTE_WIDTH} ${ROUTE_HEIGHT}`}
+          preserveAspectRatio="none"
+          bikeImageSrc="/icons/bike-pedal.png"
+          bikeSize={64}
+        />
 
-        <Reveal delay={75}>
+        <div className="relative z-10 mx-auto max-w-4xl px-4 py-16">
+        <Reveal delay={0}>
           <p className="mt-6 text-lg text-gray-700">
             More than a bike ride: it&apos;s 2h30 pedaling through
             Dublin&apos;s most charming corners, with a local guide who knows
@@ -165,6 +181,7 @@ export default function TheTourPage() {
               <div className="relative mx-auto aspect-4/5 w-full max-w-xs overflow-hidden rounded-3xl bg-black shadow-xl">
                 <video
                   controls
+                  playsInline
                   preload="metadata"
                   poster="/tour/promo-poster.jpg"
                   className="h-full w-full object-cover"
@@ -372,6 +389,7 @@ export default function TheTourPage() {
             </a>
           </div>
         </Reveal>
+        </div>
       </div>
     </div>
   );

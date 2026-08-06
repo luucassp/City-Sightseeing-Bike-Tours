@@ -1,6 +1,16 @@
 import Image from "next/image";
+import PageHeroBand from "@/components/PageHeroBand";
 import Reveal from "@/components/Reveal";
 import ScrollLine from "@/components/ScrollLine";
+
+const heroPhotos = [
+  { id: 1, url: "/tour/group-photo.jpg", title: "Private Group Tour" },
+  { id: 2, url: "/tour-photos/guide-portrait-flowers.jpg", title: "Your Guide" },
+  { id: 3, url: "/tour-photos/group-photo-kilmainham.jpg", title: "Kilmainham Gaol" },
+  { id: 4, url: "/tour-photos/dublin-castle-gardens.jpg", title: "Dublin Castle Gardens" },
+  { id: 5, url: "/tour-photos/christ-church-bridge.jpg", title: "Christ Church Cathedral" },
+  { id: 6, url: "/tour-photos/st-patricks-cathedral-view.jpg", title: "St Patrick's Cathedral" },
+];
 
 const highlights = [
   {
@@ -80,7 +90,19 @@ const routePath = buildRoutePath(ROUTE_HEIGHT);
 
 export default function PrivateHirePage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <div>
+      <PageHeroBand
+        kicker="Private Tours · Fully Custom"
+        title={
+          <>
+            Your Dublin. Your Route. <span className="text-brand-gold">Your Pace.</span>
+          </>
+        }
+        subtitle="For every kind of group."
+        photos={heroPhotos}
+      />
+
+      <div className="mx-auto max-w-4xl px-4 py-16">
       <div className="relative">
         <ScrollLine
           className="pointer-events-none absolute -left-9 inset-y-0 hidden w-12 sm:block sm:-left-10 sm:w-14 md:-left-12 md:w-16"
@@ -88,18 +110,6 @@ export default function PrivateHirePage() {
           viewBox={`0 0 60 ${ROUTE_HEIGHT}`}
           preserveAspectRatio="none"
         />
-
-        <Reveal delay={0}>
-          <h1 className="text-4xl font-bold text-brand-dark">
-            Your Dublin. Your Route. Your Pace.
-          </h1>
-        </Reveal>
-
-        <Reveal delay={75}>
-          <p className="mt-2 text-lg font-semibold text-brand-red">
-            For every kind of group.
-          </p>
-        </Reveal>
 
         <Reveal delay={125}>
           <p className="mt-4 text-lg text-gray-700">
@@ -248,6 +258,7 @@ export default function PrivateHirePage() {
             </p>
           </div>
         </Reveal>
+      </div>
       </div>
     </div>
   );

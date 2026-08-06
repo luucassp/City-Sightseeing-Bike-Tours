@@ -50,7 +50,7 @@ export default async function PricingCards() {
             return (
               <div
                 key={opt.name}
-                className="group rounded-3xl border border-gray-100 bg-white p-8 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group rounded-3xl border border-gray-100 bg-white p-8 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]"
               >
                 <span className="text-4xl">{opt.icon}</span>
                 <h3 className="mt-2 text-xl font-bold text-brand-red">

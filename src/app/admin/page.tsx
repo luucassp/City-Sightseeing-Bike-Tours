@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { updateTag } from "next/cache";
 import type { Metadata } from "next";
+import SubmitButton from "@/components/SubmitButton";
 import {
   ADMIN_SESSION_COOKIE,
   checkPassword,
@@ -136,12 +137,11 @@ export default async function AdminPage({
               Incorrect password. Try again.
             </p>
           )}
-          <button
-            type="submit"
-            className="rounded-full bg-brand-red px-6 py-2.5 font-bold text-white shadow transition hover:bg-brand-red-dark"
-          >
-            Log in
-          </button>
+          <SubmitButton
+            label="Log in"
+            pendingLabel="Logging in…"
+            className="self-start px-6 py-2.5 shadow"
+          />
         </form>
       </div>
     );
@@ -159,7 +159,7 @@ export default async function AdminPage({
         <form action={logoutAction}>
           <button
             type="submit"
-            className="text-sm font-semibold text-gray-500 hover:text-brand-red"
+            className="text-sm font-semibold text-gray-500 transition hover:text-brand-red active:text-brand-red-dark"
           >
             Log out
           </button>
@@ -210,12 +210,11 @@ export default async function AdminPage({
             />
           </label>
 
-          <button
-            type="submit"
-            className="self-start rounded-full bg-brand-gold px-8 py-3 font-bold text-brand-dark shadow-lg transition hover:scale-105"
-          >
-            Save promotion
-          </button>
+          <SubmitButton
+            label="Save promotion"
+            pendingLabel="Saving…"
+            className="self-start bg-brand-gold text-brand-dark shadow-lg hover:scale-105 hover:bg-brand-gold"
+          />
         </form>
       </section>
 
@@ -302,7 +301,7 @@ export default async function AdminPage({
               <img
                 src={settings.imageUrl}
                 alt="Current popup image"
-                className="h-32 w-full rounded-lg object-cover"
+                className="h-40 w-full rounded-lg border border-gray-200 bg-gray-50 object-contain p-2"
               />
             )}
 
@@ -373,12 +372,11 @@ export default async function AdminPage({
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="self-start rounded-full bg-brand-gold px-8 py-3 font-bold text-brand-dark shadow-lg transition hover:scale-105"
-          >
-            Save popup
-          </button>
+          <SubmitButton
+            label="Save popup"
+            pendingLabel="Saving…"
+            className="self-start bg-brand-gold text-brand-dark shadow-lg hover:scale-105 hover:bg-brand-gold"
+          />
         </form>
       </section>
     </div>

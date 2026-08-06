@@ -348,14 +348,14 @@ export default function RouteMap() {
           <button
             type="button"
             onClick={() => playRouteRef.current()}
-            className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-brand-gold px-5 py-2 text-sm font-bold text-brand-dark shadow-lg transition hover:scale-105"
+            className="absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-brand-gold px-5 py-2 text-sm font-bold text-brand-dark shadow-lg transition hover:scale-105 active:scale-95"
           >
             ↻ Restart animation
           </button>
         )}
 
         {status === "loading" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 flex animate-pulse items-center justify-center bg-gray-100">
             <span className="text-sm font-semibold text-gray-500">
               Loading map…
             </span>
@@ -387,7 +387,7 @@ export default function RouteMap() {
               type="button"
               aria-label="Close"
               onClick={() => setSelectedId(null)}
-              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-xl text-white transition hover:bg-black/60"
+              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-xl text-white transition hover:bg-black/60 active:scale-90"
             >
               ×
             </button>
