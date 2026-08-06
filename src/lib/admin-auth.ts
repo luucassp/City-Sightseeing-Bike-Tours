@@ -1,4 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const ADMIN_SESSION_COOKIE = "admin_session";
 
@@ -33,6 +35,13 @@ export function isValidSessionToken(token: string | undefined): boolean {
 
   const expiresAtNumber = Number(expiresAt);
   return Number.isFinite(expiresAtNumber) && Date.now() < expiresAtNumber;
+}
+
+export async function requireAdminSession(): Promise<void> {
+  const jar = await cookies();
+  if (!isValidSessionToken(jar.get(ADMIN_SESSION_COOKIE)?.value)) {
+    redirect("/admin");
+  }
 }
 
 export function checkPassword(password: string): boolean {
