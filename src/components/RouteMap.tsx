@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { PointOfInterest } from "@/lib/points-of-interest";
 
 const MAPLIBRE_CSS_URL =
   "https://cdn.jsdelivr.net/npm/maplibre-gl@4/dist/maplibre-gl.css";
@@ -18,94 +19,35 @@ interface RouteStop {
   img?: string;
 }
 
-const routeStops: RouteStop[] = [
-  {
-    id: 0,
-    kind: "start",
-    tag: "Start",
-    name: "Drury Street Car Park",
-    coord: [-6.2634, 53.3417],
-    desc: "This is where the adventure begins: pick up your bike at the Drury Street Multi-Storey Car Park (Bike Park), Dublin 2. Follow the signs inside the car park to find our desk.",
-  },
-  {
-    id: 1,
-    kind: "stop",
-    tag: "Stop 1",
-    name: "Dublin Castle",
-    coord: [-6.2675, 53.3429],
-    desc: "A 13th-century fortress at the heart of Irish governance, with lavish State Apartments featuring Waterford crystal chandeliers, a medieval Undercroft and the Gothic Revival Chapel Royal. Its gardens offer a peaceful break from the busy city streets.",
-    img: "/stops/dublin-castle.jpg",
-  },
-  {
-    id: 2,
-    kind: "stop",
-    tag: "Stop 2",
-    name: "St Patrick's Cathedral",
-    coord: [-6.2715, 53.3395],
-    desc: "Ireland's largest cathedral, built in 1191 and dedicated to the country's patron saint. Home to the tomb of Jonathan Swift, author of 'Gulliver's Travels', with striking Gothic architecture and stained glass, and a history that includes sheltering locals during the 1641 Irish Rebellion.",
-    img: "/stops/st-patricks-cathedral.jpg",
-  },
-  {
-    id: 3,
-    kind: "stop",
-    tag: "Stop 3",
-    name: "The Liberties",
-    coord: [-6.279, 53.3417],
-    desc: "One of Dublin's oldest neighbourhoods, dating back to the 12th century and once located outside the city walls. Today it mixes traditional markets, craft distilleries and hidden gems like Marsh's Library, Ireland's oldest public library.",
-    img: "/stops/the-liberties.jpg",
-  },
-  {
-    id: 4,
-    kind: "stop",
-    tag: "Stop 4",
-    name: "Guinness Storehouse",
-    coord: [-6.2867, 53.3419],
-    desc: "Dublin's most visited attraction, housed in a seven-storey building shaped like a giant pint glass. Learn about the 250-year history of Ireland's most famous export, explore vintage advertising, and take in panoramic views of the city from the Gravity Bar.",
-    img: "/stops/guinness-storehouse.jpg",
-  },
-  {
-    id: 5,
-    kind: "stop",
-    tag: "Stop 5",
-    name: "IMMA / Royal Hospital",
-    coord: [-6.2986, 53.3406],
-    desc: "A magnificent 17th-century building inspired by Les Invalides in Paris, now home to the Irish Museum of Modern Art. Formal gardens and a collection of over 3,500 artworks, with the Great Hall and Chapel among its architectural highlights.",
-    img: "/stops/imma-royal-hospital.jpg",
-  },
-  {
-    id: 6,
-    kind: "stop",
-    tag: "Stop 6",
-    name: "Kilmainham Gaol",
-    coord: [-6.3073, 53.3421],
-    desc: "A former prison, built in 1796, that held many leaders of Ireland's fight for independence, including participants of the 1916 Easter Rising. Its austere cells and restoration exhibition offer a powerful look at Ireland's history.",
-    img: "/stops/kilmainham-gaol.jpg",
-  },
-  {
-    id: 7,
-    kind: "stop",
-    tag: "Stop 7",
-    name: "St Patrick's Tower",
-    coord: [-6.2848, 53.3389],
-    desc: "A unique octagonal smock windmill dating back to 1757, once part of the Roe Distillery. Europe's tallest windmill and no longer operational, its green copper dome remains an iconic landmark in the Liberties.",
-    img: "/stops/st-patricks-tower.jpg",
-  },
-  {
-    id: 8,
-    kind: "stop",
-    tag: "Stop 8",
-    name: "Christ Church Cathedral",
-    coord: [-6.2705, 53.3434],
-    desc: "Founded in 1028 and standing at the heart of medieval Dublin, with one of the largest crypts in Britain and Ireland. Climb the belfry to ring the bells, and look out for the mummified cat and rat immortalised in James Joyce's 'Finnegans Wake'.",
-    img: "/stops/christ-church.jpg",
-  },
-];
+// The meeting point isn't one of the 8 marketing-editable points of
+// interest, so it stays fully hardcoded here.
+const START_POINT: RouteStop = {
+  id: 0,
+  kind: "start",
+  tag: "Start",
+  name: "Drury Street Car Park",
+  coord: [-6.2634, 53.3417],
+  desc: "This is where the adventure begins: pick up your bike at the Drury Street Multi-Storey Car Park (Bike Park), Dublin 2. Follow the signs inside the car park to find our desk.",
+};
+
+// Route coordinates are a mapping concern, not marketing content, so they
+// stay keyed by id here rather than living in the points_of_interest table.
+const COORD_BY_ID: Record<number, [number, number]> = {
+  1: [-6.2675, 53.3429],
+  2: [-6.2715, 53.3395],
+  3: [-6.279, 53.3417],
+  4: [-6.2867, 53.3419],
+  5: [-6.2986, 53.3406],
+  6: [-6.3073, 53.3421],
+  7: [-6.2848, 53.3389],
+  8: [-6.2705, 53.3434],
+};
 
 function lerp(a: [number, number], b: [number, number], t: number): [number, number] {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
 }
 
-function buildPath(): [number, number][] {
+function buildPath(routeStops: RouteStop[]): [number, number][] {
   const coords = routeStops.map((p) => p.coord).concat([routeStops[0].coord]);
   const stepsPerSeg = 40;
   const path: [number, number][] = [];
@@ -160,7 +102,7 @@ function loadMapLibreGL(): Promise<any> {
   return mapLibreLoading;
 }
 
-export default function RouteMap() {
+export default function RouteMap({ points }: { points: PointOfInterest[] }) {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const playRouteRef = useRef<() => void>(() => {});
@@ -169,6 +111,23 @@ export default function RouteMap() {
     "loading"
   );
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const routeStops: RouteStop[] = useMemo(
+    () => [
+      START_POINT,
+      ...points.map((point) => ({
+        id: point.id,
+        kind: "stop" as const,
+        tag: point.tag,
+        name: point.title,
+        coord: COORD_BY_ID[point.id] ?? START_POINT.coord,
+        desc: point.longDesc,
+        img: point.imageUrl,
+      })),
+    ],
+    [points],
+  );
+
   const selectedStop =
     selectedId !== null
       ? routeStops.find((s) => s.id === selectedId) ?? null
@@ -214,7 +173,7 @@ export default function RouteMap() {
         map.on("load", () => {
           if (cancelled) return;
 
-          const fullPath = buildPath();
+          const fullPath = buildPath(routeStops);
 
           map.addSource("route", {
             type: "geojson",
@@ -323,7 +282,7 @@ export default function RouteMap() {
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [routeStops]);
 
   return (
     <div className="mx-auto mt-16 max-w-6xl px-4">
