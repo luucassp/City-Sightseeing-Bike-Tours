@@ -1,6 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
+
+const MAX_TILT_ROTATION = 8;
+
+// Subtle 3D tilt that follows the cursor, giving each tile a bit of physical
+// presence. Mutates the DOM directly via a ref (not React state) so mouse
+// movement doesn't trigger a re-render every frame.
+function TiltTile({
+  className,
+  children,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * MAX_TILT_ROTATION;
+      const rotateX = (-(y - rect.height / 2) / (rect.height / 2)) * MAX_TILT_ROTATION;
+      el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+    };
+    const handleMouseLeave = () => {
+      el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+    };
+
+    el.addEventListener("mousemove", handleMouseMove);
+    el.addEventListener("mouseleave", handleMouseLeave);
+    return () => {
+      el.removeEventListener("mousemove", handleMouseMove);
+      el.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
+  return (
+    <button
+      ref={ref}
+      className={className}
+      style={{ transition: "transform 200ms ease-out" }}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
 export interface MediaItem {
   id: number | string;
@@ -61,16 +110,25 @@ export default function InteractiveBentoGallery({
         </div>
       )}
 
-      <div className="mx-auto mt-10 grid max-w-6xl auto-rows-[140px] grid-flow-row-dense grid-cols-2 gap-4 px-4 sm:auto-rows-[160px] md:grid-cols-4">
-        {mediaItems.map((item, i) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setOpenIndex(i)}
-            className={`group relative overflow-hidden rounded-2xl text-left shadow-sm transition hover:shadow-lg ${
-              item.span || "col-span-1 row-span-1"
-            }`}
-          >
+      <div className="relative mx-auto mt-10 max-w-6xl px-4">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-16 -left-16 h-72 w-72 rounded-full bg-brand-gold/25 blur-3xl motion-safe:animate-aurora-1"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -bottom-16 h-72 w-72 rounded-full bg-brand-red/15 blur-3xl motion-safe:animate-aurora-2"
+        />
+
+        <div className="relative grid auto-rows-35 grid-flow-row-dense grid-cols-2 gap-4 sm:auto-rows-40 md:grid-cols-4">
+          {mediaItems.map((item, i) => (
+            <TiltTile
+              key={item.id}
+              onClick={() => setOpenIndex(i)}
+              className={`group relative overflow-hidden rounded-2xl text-left shadow-sm transition-shadow hover:shadow-lg ${
+                item.span || "col-span-1 row-span-1"
+              }`}
+            >
             {item.type === "video" ? (
               <video
                 src={item.url}
@@ -95,8 +153,9 @@ export default function InteractiveBentoGallery({
                 {item.desc}
               </p>
             </div>
-          </button>
-        ))}
+            </TiltTile>
+          ))}
+        </div>
       </div>
 
       {active && (

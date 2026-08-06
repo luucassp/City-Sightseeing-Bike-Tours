@@ -17,6 +17,8 @@
   --color-brand-dark: #1a1a1a;
 
   --animate-hero-zoom: hero-zoom 20s ease-in-out infinite alternate;
+  --animate-aurora-1: aurora-1 14s ease-in-out infinite alternate;
+  --animate-aurora-2: aurora-2 16s ease-in-out infinite alternate;
 }
 
 @keyframes hero-zoom {
@@ -25,6 +27,24 @@
   }
   to {
     transform: scale(1.08);
+  }
+}
+
+@keyframes aurora-1 {
+  from {
+    transform: translate(-10%, -10%) scale(1);
+  }
+  to {
+    transform: translate(10%, 10%) scale(1.15);
+  }
+}
+
+@keyframes aurora-2 {
+  from {
+    transform: translate(8%, 8%) scale(1);
+  }
+  to {
+    transform: translate(-8%, -8%) scale(0.9);
   }
 }
 
