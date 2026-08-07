@@ -28,7 +28,7 @@ export default function Hero() {
   }, [showVideo]);
 
   return (
-    <section className="relative flex min-h-dvh items-center justify-center overflow-hidden text-center text-white">
+    <section className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-brand-dark text-center text-white">
       <Image
         src="/hero.jpg"
         alt=""

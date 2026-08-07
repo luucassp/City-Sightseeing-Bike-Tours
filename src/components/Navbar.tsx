@@ -22,7 +22,18 @@ export default function Navbar({ logoUrl }: { logoUrl?: string }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const hasDarkBand = DARK_BAND_PATHS.includes(pathname);
+  // Navbar lives in the root layout, which Next.js can statically cache
+  // and share across routes — so the dark-band lookup can't be trusted
+  // until we're actually mounted on the client with the real pathname.
+  // Rendering the same safe (non-dark-band) state on the server and on
+  // this first client pass keeps SSR/hydration output identical; the
+  // pill then transitions into its dark-band styling right after mount
+  // (smoothly, via the existing transition-all on <nav>).
+  const [mounted, setMounted] = useState(false);
+  // Standard hydration-safe "mounted" flag, not state synced from an external system.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  const hasDarkBand = mounted && DARK_BAND_PATHS.includes(pathname);
 
   useEffect(() => {
     if (!hasDarkBand) return;
