@@ -4,6 +4,8 @@ Site institucional e de vendas para uma empresa de passeios guiados de bicicleta
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?logo=tailwindcss&logoColor=white)
 
+[![Sightseeing Bike Tours Dublin](docs/screenshot.png)](https://city-sightseeing-bike-tours.vercel.app)
+
 ---
 
 ## 📖 Sobre o projeto
